@@ -1,0 +1,75 @@
+<div class="relative overflow-hidden rounded-2xl">
+  <div
+    class="flex transition-transform duration-500 ease-out"
+    [style.transform]="'translateX(-' + current() * 100 + '%)'"
+  >
+    <div
+      *ngFor="let slide of slides; let i = index; trackBy: trackBySlide"
+      class="relative w-full flex-shrink-0"
+      [ngClass]="slide.bgClass"
+    >
+      <div class="grid grid-cols-1 items-center gap-6 p-6 sm:p-10 md:grid-cols-2 md:p-14">
+        <div class="space-y-3 sm:space-y-4">
+          <p class="text-xs font-semibold uppercase tracking-wider text-primary sm:text-sm">
+            {{ slide.subtitle }}
+          </p>
+          <h2 class="text-2xl font-extrabold leading-tight text-gray-900 sm:text-3xl md:text-4xl lg:text-5xl">
+            {{ slide.title }}
+          </h2>
+          <p class="max-w-md text-sm text-gray-600 sm:text-base">
+            {{ slide.description }}
+          </p>
+          <button type="button" class="btn-primary mt-2 sm:mt-4">
+            {{ slide.ctaText }}
+            <i-lucide [img]="icons['ArrowRight']" class="ml-2 h-4 w-4"></i-lucide>
+          </button>
+        </div>
+        <div class="flex justify-center md:justify-end">
+          <img
+            [src]="slide.image"
+            [alt]="slide.title"
+            class="max-h-48 w-auto object-contain sm:max-h-64 md:max-h-80"
+            [attr.loading]="i === 0 ? 'eager' : 'lazy'"
+            [attr.fetchpriority]="i === 0 ? 'high' : null"
+            [attr.decoding]="i === 0 ? 'sync' : 'async'"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button
+    *ngIf="slides.length > 1"
+    type="button"
+    (click)="prev()"
+    class="absolute left-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-gray-700 shadow-md transition hover:bg-white sm:h-10 sm:w-10"
+    aria-label="Previous slide"
+  >
+    <i-lucide [img]="icons['ChevronLeft']" class="h-5 w-5"></i-lucide>
+  </button>
+  <button
+    *ngIf="slides.length > 1"
+    type="button"
+    (click)="next()"
+    class="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-gray-700 shadow-md transition hover:bg-white sm:h-10 sm:w-10"
+    aria-label="Next slide"
+  >
+    <i-lucide [img]="icons['ChevronRight']" class="h-5 w-5"></i-lucide>
+  </button>
+
+  <div
+    *ngIf="slides.length > 1"
+    class="absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5"
+  >
+    <button
+      *ngFor="let slide of slides; let idx = index; trackBy: trackBySlide"
+      type="button"
+      (click)="go(idx)"
+      [attr.aria-label]="'Go to slide ' + (idx + 1)"
+      [class.bg-primary]="idx === current()"
+      [class.bg-gray-300]="idx !== current()"
+      class="h-2 w-2 rounded-full transition-all"
+      [class.w-5]="idx === current()"
+    ></button>
+  </div>
+</div>

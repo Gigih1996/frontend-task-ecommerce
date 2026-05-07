@@ -1,0 +1,58 @@
+<div
+  *ngIf="open"
+  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 animate-fade-in"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-labelledby]="'confirm-title'"
+  (click)="onBackdrop($event)"
+>
+  <div
+    class="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl sm:p-6"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="flex items-start gap-3">
+      <span
+        class="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full"
+        [class.bg-red-100]="tone === 'danger'"
+        [class.text-red-600]="tone === 'danger'"
+        [class.bg-primary-50]="tone === 'primary'"
+        [class.text-primary]="tone === 'primary'"
+      >
+        <i-lucide [img]="icons[icon]" class="h-5 w-5"></i-lucide>
+      </span>
+      <div class="flex-1">
+        <h3 id="confirm-title" class="text-base font-bold text-gray-900">
+          {{ title }}
+        </h3>
+        <p *ngIf="message" class="mt-1 text-sm text-gray-600">{{ message }}</p>
+      </div>
+    </div>
+
+    <div class="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
+      <button
+        type="button"
+        (click)="onCancel()"
+        [disabled]="loading"
+        class="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-50 disabled:opacity-60"
+      >{{ cancelText }}</button>
+
+      <button
+        type="button"
+        (click)="onConfirm()"
+        [disabled]="loading"
+        class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition disabled:opacity-60"
+        [class.bg-red-600]="tone === 'danger'"
+        [class.hover:bg-red-700]="tone === 'danger'"
+        [class.bg-primary]="tone === 'primary'"
+        [class.hover:bg-primary-700]="tone === 'primary'"
+      >
+        <i-lucide
+          *ngIf="loading"
+          [img]="icons['Loader2']"
+          class="h-4 w-4 animate-spin"
+        ></i-lucide>
+        {{ confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

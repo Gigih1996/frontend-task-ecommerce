@@ -1,0 +1,27 @@
+<section class="space-y-4">
+  <div *ngIf="title" class="flex items-center justify-between">
+    <h2 class="text-lg font-bold text-gray-900 sm:text-xl">{{ title }}</h2>
+    <a
+      *ngIf="showViewAll"
+      href="#"
+      class="text-sm font-semibold text-primary hover:underline"
+    >{{ viewAllText }}</a>
+  </div>
+
+  <app-loader *ngIf="loading" label="Loading products..."></app-loader>
+
+  <div
+    *ngIf="!loading && products.length"
+    class="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4"
+  >
+    <app-product-card
+      *ngFor="let product of products; trackBy: trackById"
+      [product]="product"
+    ></app-product-card>
+  </div>
+
+  <p
+    *ngIf="!loading && !products.length"
+    class="rounded-xl border border-dashed border-gray-200 py-12 text-center text-sm text-gray-500"
+  >{{ emptyText }}</p>
+</section>

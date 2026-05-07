@@ -1,0 +1,116 @@
+<header class="sticky top-0 z-30 border-b border-gray-100 bg-white/90 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+    <a routerLink="/home" class="flex items-center gap-2">
+      <span class="grid h-9 w-9 place-items-center rounded-lg bg-primary text-white shadow-sm">
+        <i-lucide [img]="icons['ShoppingBag']" class="h-5 w-5"></i-lucide>
+      </span>
+      <span class="text-lg font-bold text-gray-900">
+        Shop<span class="text-primary">Ease</span>
+      </span>
+    </a>
+
+    <nav class="hidden items-center gap-6 md:flex">
+      <a
+        *ngFor="let link of links; trackBy: trackByLink"
+        [routerLink]="link.path"
+        routerLinkActive="text-primary"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="text-sm font-medium text-gray-700 hover:text-primary"
+      >{{ link.label }}</a>
+    </nav>
+
+    <div class="flex items-center gap-1 sm:gap-2">
+      <button type="button" class="hidden rounded-full p-2 text-gray-600 hover:bg-gray-100 sm:block" aria-label="Search">
+        <i-lucide [img]="icons['Search']" class="h-5 w-5"></i-lucide>
+      </button>
+      <a
+        routerLink="/cart"
+        class="relative hidden rounded-full p-2 text-gray-600 hover:bg-gray-100 sm:block"
+        aria-label="Cart"
+      >
+        <i-lucide [img]="icons['ShoppingCart']" class="h-5 w-5"></i-lucide>
+        <span
+          *ngIf="cart.count() > 0"
+          class="absolute -right-0.5 -top-0.5 grid min-w-[18px] place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-[18px] text-white"
+          [attr.aria-label]="cart.count() + ' items in cart'"
+        >{{ cart.count() > 99 ? '99+' : cart.count() }}</span>
+      </a>
+
+      <div #userMenu *ngIf="auth.user() as user" class="relative">
+        <button
+          type="button"
+          (click)="toggleMenu($event)"
+          class="flex items-center gap-2 rounded-full border border-gray-200 px-2 py-1 hover:bg-gray-50"
+          aria-haspopup="true"
+          [attr.aria-expanded]="menuOpen()"
+        >
+          <app-avatar
+            [src]="user.image"
+            [name]="user.firstName + ' ' + user.lastName"
+            [seed]="user.email"
+            sizeClass="h-7 w-7"
+            textClass="text-[10px]"
+          ></app-avatar>
+          <span class="hidden text-sm font-medium text-gray-700 sm:block">
+            {{ user.firstName }}
+          </span>
+          <i-lucide [img]="icons['ChevronDown']" class="h-4 w-4 text-gray-400"></i-lucide>
+        </button>
+
+        <div
+          *ngIf="menuOpen()"
+          class="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-gray-100 bg-white p-2 shadow-lg animate-fade-in"
+          role="menu"
+        >
+          <div class="border-b border-gray-100 px-3 py-2">
+            <p class="text-sm font-semibold text-gray-900">
+              {{ user.firstName }} {{ user.lastName }}
+            </p>
+            <p class="truncate text-xs text-gray-500">{{ user.email }}</p>
+          </div>
+          <button
+            type="button"
+            (click)="askLogout()"
+            class="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50"
+          >
+            <i-lucide [img]="icons['LogOut']" class="h-4 w-4"></i-lucide>
+            Logout
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="rounded-md p-2 text-gray-700 hover:bg-gray-100 md:hidden"
+        (click)="toggleMobile()"
+        [attr.aria-label]="mobileOpen() ? 'Close menu' : 'Open menu'"
+      >
+        <i-lucide [img]="mobileOpen() ? icons['X'] : icons['Menu']" class="h-6 w-6"></i-lucide>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="mobileOpen()" class="border-t border-gray-100 bg-white md:hidden">
+    <nav class="space-y-1 px-4 py-3">
+      <a
+        *ngFor="let link of links; trackBy: trackByLink"
+        [routerLink]="link.path"
+        (click)="mobileOpen.set(false)"
+        routerLinkActive="bg-primary-50 text-primary"
+        class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      >{{ link.label }}</a>
+    </nav>
+  </div>
+</header>
+
+<app-confirm-dialog
+  [open]="logoutOpen()"
+  title="Logout dari ShopEase?"
+  message="Anda perlu login lagi untuk mengakses Home dan detail produk."
+  confirmText="Logout"
+  cancelText="Batal"
+  tone="danger"
+  icon="LogOut"
+  (confirm)="confirmLogout()"
+  (cancel)="cancelLogout()"
+></app-confirm-dialog>

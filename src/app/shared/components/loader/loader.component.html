@@ -1,0 +1,7 @@
+<div
+  [ngClass]="fullscreen ? 'min-h-[60vh]' : 'py-10'"
+  class="flex w-full flex-col items-center justify-center gap-3"
+>
+  <div class="loader" aria-label="Loading"></div>
+  <p *ngIf="label" class="text-sm text-gray-500">{{ label }}</p>
+</div>

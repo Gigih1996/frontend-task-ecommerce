@@ -1,0 +1,263 @@
+<div class="min-h-screen bg-gray-50">
+  <app-navbar></app-navbar>
+
+  <main class="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <app-loader *ngIf="loading()" [fullscreen]="true" label="Loading product..."></app-loader>
+
+    <div
+      *ngIf="errorMessage() && !loading()"
+      class="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-red-700"
+    >
+      <p class="font-semibold">{{ errorMessage() }}</p>
+      <a routerLink="/home" class="mt-3 inline-block text-sm font-semibold text-primary hover:underline">
+        Back to home
+      </a>
+    </div>
+
+    <ng-container *ngIf="product() as p">
+      <nav class="flex items-center gap-2 text-xs text-gray-500" aria-label="Breadcrumb">
+        <a routerLink="/home" class="hover:text-primary">Home</a>
+        <i-lucide [img]="icons['ChevronRight']" class="h-3 w-3"></i-lucide>
+        <a routerLink="/home" class="hover:text-primary capitalize">Products</a>
+        <i-lucide [img]="icons['ChevronRight']" class="h-3 w-3"></i-lucide>
+        <span class="text-gray-900">{{ p.title }}</span>
+      </nav>
+
+      <!-- Main 2-column section -->
+      <section class="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+        <!-- Gallery -->
+        <div class="grid grid-cols-[72px_1fr] gap-3 sm:grid-cols-[88px_1fr] sm:gap-4">
+          <div class="flex flex-col gap-2 sm:gap-3">
+            <button
+              *ngFor="let img of p.images.slice(0, 4); let i = index; trackBy: trackByImage"
+              type="button"
+              (click)="selectImage(img)"
+              [class.border-primary]="img === selectedImage()"
+              [class.ring-2]="img === selectedImage()"
+              [class.ring-primary-200]="img === selectedImage()"
+              [class.border-gray-200]="img !== selectedImage()"
+              class="aspect-square w-full overflow-hidden rounded-xl border-2 bg-white p-1.5 transition"
+              [attr.aria-label]="'View image ' + (i + 1)"
+            >
+              <img
+                [src]="img"
+                [alt]="p.title"
+                [appImgFallback]="p.title"
+                class="h-full w-full object-contain"
+              />
+            </button>
+          </div>
+          <div class="flex aspect-square items-center justify-center overflow-hidden rounded-2xl bg-white p-6 shadow-sm">
+            <img
+              [src]="selectedImage()"
+              [alt]="p.title"
+              [appImgFallback]="p.title"
+              class="max-h-full max-w-full object-contain"
+            />
+          </div>
+        </div>
+
+        <!-- Info column -->
+        <div class="flex flex-col gap-5">
+          <div>
+            <h1 class="text-2xl font-extrabold text-gray-900 sm:text-3xl">{{ p.title }}</h1>
+            <p class="mt-2 text-2xl font-bold text-primary sm:text-3xl">
+              {{ p.price | currency:'USD':'symbol':'1.2-2' }}
+            </p>
+            <div class="mt-2">
+              <app-rating-stars
+                [rating]="p.rating"
+                [count]="p.reviews.length"
+              ></app-rating-stars>
+            </div>
+          </div>
+
+          <p class="text-sm leading-relaxed text-gray-600">{{ p.description }}</p>
+
+          <!-- Color -->
+          <div *ngIf="colors().length">
+            <p class="text-sm font-semibold text-gray-900">Color</p>
+            <div class="mt-2 flex items-center gap-2">
+              <button
+                *ngFor="let c of colors(); trackBy: trackByColor"
+                type="button"
+                (click)="selectColor(c.hex)"
+                [attr.aria-label]="c.name"
+                [attr.aria-pressed]="selectedColor() === c.hex"
+                class="grid h-9 w-9 place-items-center rounded-lg border-2 transition"
+                [class.border-primary]="selectedColor() === c.hex"
+                [class.border-gray-200]="selectedColor() !== c.hex"
+              >
+                <span
+                  class="block h-6 w-6 rounded-md"
+                  [style.background-color]="c.hex"
+                ></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div>
+            <p class="text-sm font-semibold text-gray-900">Quantity</p>
+            <div class="mt-2 inline-flex items-center rounded-lg border border-gray-200 bg-white">
+              <button
+                type="button"
+                (click)="dec()"
+                class="grid h-10 w-10 place-items-center text-gray-600 transition hover:bg-gray-50 disabled:opacity-40"
+                [disabled]="quantity() <= 1"
+                aria-label="Decrease quantity"
+              >
+                <i-lucide [img]="icons['Minus']" class="h-4 w-4"></i-lucide>
+              </button>
+              <span class="w-12 text-center text-sm font-semibold">{{ quantity() }}</span>
+              <button
+                type="button"
+                (click)="inc()"
+                class="grid h-10 w-10 place-items-center text-gray-600 transition hover:bg-gray-50 disabled:opacity-40"
+                [disabled]="quantity() >= p.stock"
+                aria-label="Increase quantity"
+              >
+                <i-lucide [img]="icons['Plus']" class="h-4 w-4"></i-lucide>
+              </button>
+            </div>
+            <p class="mt-1.5 text-[11px] text-gray-400">
+              {{ p.stock }} in stock — {{ p.availabilityStatus }}
+            </p>
+          </div>
+
+          <!-- Stacked CTAs -->
+          <div class="flex flex-col gap-2.5 pt-2">
+            <button
+              type="button"
+              (click)="addToCart()"
+              class="btn-primary w-full"
+            >
+              <i-lucide
+                [img]="justAdded() ? icons['CheckCircle2'] : icons['ShoppingCart']"
+                class="mr-2 h-4 w-4"
+              ></i-lucide>
+              {{ justAdded() ? 'Added to Cart' : 'Add to Cart' }}
+            </button>
+            <button type="button" class="btn-outline w-full">
+              <i-lucide [img]="icons['Heart']" class="mr-2 h-4 w-4"></i-lucide>
+              Add to Wishlist
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <section class="mt-10 rounded-2xl border border-gray-100 bg-white p-5 sm:p-7">
+        <div class="flex gap-1 overflow-x-auto border-b border-gray-200" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            (click)="setTab('description')"
+            [class.text-primary]="activeTab() === 'description'"
+            [class.border-primary]="activeTab() === 'description'"
+            [class.border-transparent]="activeTab() !== 'description'"
+            [class.text-gray-500]="activeTab() !== 'description'"
+            class="whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold transition"
+          >Description</button>
+          <button
+            type="button"
+            role="tab"
+            (click)="setTab('specifications')"
+            [class.text-primary]="activeTab() === 'specifications'"
+            [class.border-primary]="activeTab() === 'specifications'"
+            [class.border-transparent]="activeTab() !== 'specifications'"
+            [class.text-gray-500]="activeTab() !== 'specifications'"
+            class="whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold transition"
+          >Specifications</button>
+          <button
+            type="button"
+            role="tab"
+            (click)="setTab('reviews')"
+            [class.text-primary]="activeTab() === 'reviews'"
+            [class.border-primary]="activeTab() === 'reviews'"
+            [class.border-transparent]="activeTab() !== 'reviews'"
+            [class.text-gray-500]="activeTab() !== 'reviews'"
+            class="whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold transition"
+          >Reviews ({{ p.reviews.length }})</button>
+        </div>
+
+        <div class="pt-5 text-sm text-gray-700">
+          <!-- Description tab -->
+          <div *ngIf="activeTab() === 'description'" class="space-y-4 leading-relaxed">
+            <p>{{ p.description }}</p>
+
+            <ul *ngIf="features().length" class="ml-5 list-disc space-y-1.5 text-gray-600">
+              <li *ngFor="let f of features(); trackBy: trackByFeature">{{ f }}</li>
+            </ul>
+
+            <div class="space-y-1 pt-2 text-gray-600">
+              <p>
+                Dimensions: {{ p.dimensions.width }}cm (W) ×
+                {{ p.dimensions.height }}cm (H) ×
+                {{ p.dimensions.depth }}cm (D)
+              </p>
+              <p>Weight: {{ p.weight }}kg</p>
+            </div>
+          </div>
+
+          <!-- Specifications tab -->
+          <dl
+            *ngIf="activeTab() === 'specifications'"
+            class="grid grid-cols-1 gap-x-6 sm:grid-cols-2"
+          >
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Brand</dt>
+              <dd class="font-medium text-gray-900">{{ p.brand || '-' }}</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Category</dt>
+              <dd class="font-medium capitalize text-gray-900">{{ p.category }}</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">SKU</dt>
+              <dd class="font-medium text-gray-900">{{ p.sku }}</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Stock</dt>
+              <dd class="font-medium text-gray-900">{{ p.stock }}</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Discount</dt>
+              <dd class="font-medium text-gray-900">{{ p.discountPercentage | number:'1.0-2' }}%</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Rating</dt>
+              <dd class="font-medium text-gray-900">{{ p.rating }}</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Weight</dt>
+              <dd class="font-medium text-gray-900">{{ p.weight }} kg</dd>
+            </div>
+            <div class="flex justify-between border-b border-gray-100 py-2.5">
+              <dt class="text-gray-500">Availability</dt>
+              <dd class="font-medium text-gray-900">{{ p.availabilityStatus }}</dd>
+            </div>
+          </dl>
+
+          <!-- Reviews tab -->
+          <div *ngIf="activeTab() === 'reviews'" class="space-y-4">
+            <p *ngIf="!p.reviews.length" class="text-gray-500">No reviews yet.</p>
+            <article
+              *ngFor="let review of p.reviews; let i = index; trackBy: trackByReview"
+              class="rounded-xl border border-gray-100 bg-gray-50 p-4"
+            >
+              <div class="flex items-center justify-between">
+                <p class="font-semibold text-gray-900">{{ review.reviewerName }}</p>
+                <app-rating-stars [rating]="review.rating" [showCount]="false"></app-rating-stars>
+              </div>
+              <p class="mt-1 text-xs text-gray-400">{{ review.date | date:'mediumDate' }}</p>
+              <p class="mt-2 text-sm text-gray-700">{{ review.comment }}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </main>
+
+  <app-footer></app-footer>
+</div>

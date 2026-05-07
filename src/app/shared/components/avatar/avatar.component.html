@@ -1,0 +1,23 @@
+<ng-container *ngIf="showImage(); else fallbackTpl">
+  <img
+    [src]="imageUrl()"
+    [alt]="name"
+    [class]="sizeClass + ' rounded-full object-cover bg-gray-100'"
+    referrerpolicy="no-referrer"
+    (error)="onError()"
+  />
+</ng-container>
+
+<ng-template #fallbackTpl>
+  <span
+    [class]="
+      sizeClass +
+      ' ' +
+      textClass +
+      ' ' +
+      bgClass() +
+      ' grid place-items-center rounded-full font-semibold text-white'
+    "
+    [attr.aria-label]="name"
+  >{{ initials() }}</span>
+</ng-template>

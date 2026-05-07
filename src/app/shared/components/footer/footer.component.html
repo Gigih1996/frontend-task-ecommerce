@@ -1,0 +1,41 @@
+<footer class="mt-12 border-t border-gray-100 bg-white">
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="grid h-9 w-9 place-items-center rounded-lg bg-primary text-white">
+            <i-lucide [img]="icons['ShoppingBag']" class="h-5 w-5"></i-lucide>
+          </span>
+          <span class="text-lg font-bold text-gray-900">
+            Shop<span class="text-primary">Ease</span>
+          </span>
+        </div>
+        <p class="mt-4 text-sm text-gray-500">
+          Your one-stop shop for quality products at the best prices.
+        </p>
+        <div class="mt-4 flex items-center gap-3">
+          <a
+            *ngFor="let s of socials; trackBy: trackBySocial"
+            href="#"
+            [attr.aria-label]="s.label"
+            class="grid h-9 w-9 place-items-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-primary hover:text-white"
+          >
+            <i-lucide [img]="icons[s.icon]" class="h-4 w-4"></i-lucide>
+          </a>
+        </div>
+      </div>
+
+      <div *ngFor="let col of columns; trackBy: trackByCol">
+        <h4 class="text-sm font-semibold text-gray-900">{{ col.title }}</h4>
+        <ul class="mt-4 space-y-2">
+          <li *ngFor="let item of col.items; trackBy: trackByItem">
+            <a href="#" class="text-sm text-gray-500 hover:text-primary">{{ item }}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="border-t border-gray-100 py-4 text-center text-xs text-gray-500">
+    &copy; {{ year }} ShopEase. All rights reserved.
+  </div>
+</footer>

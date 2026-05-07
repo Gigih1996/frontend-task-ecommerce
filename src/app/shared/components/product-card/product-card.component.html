@@ -1,0 +1,48 @@
+<a
+  [routerLink]="['/product', product.id]"
+  class="group card flex flex-col"
+>
+  <div class="relative aspect-square overflow-hidden bg-gray-50">
+    <img
+      [src]="product.thumbnail"
+      [alt]="product.title"
+      [appImgFallback]="product.title"
+      class="h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-105"
+      loading="lazy"
+    />
+    <button
+      type="button"
+      (click)="toggleLike($event)"
+      class="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-gray-500 shadow-sm transition hover:text-red-500"
+      [attr.aria-pressed]="liked()"
+      aria-label="Add to wishlist"
+    >
+      <i-lucide
+        [img]="icons['Heart']"
+        class="h-4 w-4"
+        [class.text-red-500]="liked()"
+        [attr.fill]="liked() ? 'currentColor' : 'none'"
+      ></i-lucide>
+    </button>
+    <span
+      *ngIf="product.discountPercentage > 5"
+      class="absolute left-2 top-2 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold uppercase text-white"
+    >-{{ product.discountPercentage | number:'1.0-0' }}%</span>
+  </div>
+
+  <div class="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
+    <p class="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+      {{ product.category }}
+    </p>
+    <h3 class="line-clamp-1 text-sm font-semibold text-gray-900 group-hover:text-primary sm:text-base">
+      {{ product.title }}
+    </h3>
+    <p class="text-base font-bold text-primary sm:text-lg">
+      {{ product.price | currency:'USD':'symbol':'1.2-2' }}
+    </p>
+    <app-rating-stars
+      [rating]="product.rating"
+      [count]="product.stock"
+    ></app-rating-stars>
+  </div>
+</a>
