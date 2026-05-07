@@ -99,6 +99,21 @@
         routerLinkActive="bg-primary-50 text-primary"
         class="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
       >{{ link.label }}</a>
+      <a
+        routerLink="/cart"
+        (click)="mobileOpen.set(false)"
+        routerLinkActive="bg-primary-50 text-primary"
+        class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+      >
+        <span class="flex items-center gap-2">
+          <i-lucide [img]="icons['ShoppingCart']" class="h-4 w-4"></i-lucide>
+          Cart
+        </span>
+        <span
+          *ngIf="cart.count() > 0"
+          class="grid min-w-[20px] place-items-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold leading-5 text-white"
+        >{{ cart.count() > 99 ? '99+' : cart.count() }}</span>
+      </a>
     </nav>
   </div>
 </header>

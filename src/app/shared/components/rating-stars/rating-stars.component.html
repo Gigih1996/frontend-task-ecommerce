@@ -1,13 +1,25 @@
 <div class="flex items-center gap-1.5" [attr.aria-label]="ariaLabel()">
   <div class="flex items-center" aria-hidden="true">
-    <i-lucide
-      *ngFor="let i of stars(); trackBy: trackByIndex"
-      [img]="icons['Star']"
-      class="h-4 w-4"
-      [class.text-yellow-400]="i <= filled()"
-      [class.text-gray-300]="i > filled()"
-      [attr.fill]="i <= filled() ? 'currentColor' : 'none'"
-    ></i-lucide>
+    <ng-container *ngFor="let kind of stars(); let i = index; trackBy: trackByIndex">
+      <i-lucide
+        *ngIf="kind === 'full'"
+        [img]="icons['Star']"
+        [class]="sizeClass + ' text-yellow-400'"
+        fill="currentColor"
+      ></i-lucide>
+      <i-lucide
+        *ngIf="kind === 'half'"
+        [img]="icons['StarHalf']"
+        [class]="sizeClass + ' text-yellow-400'"
+        fill="currentColor"
+      ></i-lucide>
+      <i-lucide
+        *ngIf="kind === 'empty'"
+        [img]="icons['Star']"
+        [class]="sizeClass + ' text-gray-300'"
+        fill="none"
+      ></i-lucide>
+    </ng-container>
   </div>
-  <span *ngIf="showCount && count !== null" class="text-xs text-gray-500">({{ count }})</span>
+  <span *ngIf="showCount && count !== null" class="text-xs text-gray-500">({{ count }} Reviews)</span>
 </div>
