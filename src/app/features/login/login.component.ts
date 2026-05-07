@@ -77,6 +77,9 @@ export class LoginComponent implements AfterViewInit {
     this.google
       .renderButton(this.googleBtn.nativeElement, (payload, raw) => {
         this.auth.loginWithGoogle(payload, raw);
+        // Remove the GIS overlay (#credential_picker_container) before navigating
+        // so it doesn't persist on top of the home page and block navbar clicks.
+        this.google.cancel();
         const redirect =
           this.route.snapshot.queryParamMap.get('redirect') || '/home';
         this.router.navigateByUrl(redirect);

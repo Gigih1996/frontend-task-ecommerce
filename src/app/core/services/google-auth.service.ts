@@ -162,8 +162,18 @@ export class GoogleAuthService {
     return { payload, rawCredential: idToken, redirectAfterLogin };
   }
 
+  /**
+   * Cancel any pending GIS UI (One Tap prompt, credential picker overlay).
+   * Call this after a successful sign-in so the injected #credential_picker_container
+   * is removed from the DOM before routing away from the login page.
+   */
+  cancel(): void {
+    window.google?.accounts.id.cancel();
+  }
+
   signOut(): void {
     window.google?.accounts.id.disableAutoSelect();
+    window.google?.accounts.id.cancel();
   }
 
   // ─── helpers ──────────────────────────────────────────────────────────────
