@@ -14,7 +14,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../core/services/auth.service';
 import { GoogleAuthService } from '../../core/services/google-auth.service';
@@ -31,7 +31,6 @@ export class LoginComponent implements AfterViewInit {
   private auth = inject(AuthService);
   private google = inject(GoogleAuthService);
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
 
   @ViewChild('googleBtn', { static: false })
@@ -80,9 +79,7 @@ export class LoginComponent implements AfterViewInit {
         // Remove the GIS overlay (#credential_picker_container) before navigating
         // so it doesn't persist on top of the home page and block navbar clicks.
         this.google.cancel();
-        const redirect =
-          this.route.snapshot.queryParamMap.get('redirect') || '/home';
-        this.router.navigateByUrl(redirect);
+        this.router.navigateByUrl('/home');
       })
       .catch((err: Error) => this.googleError.set(err.message));
   }
@@ -105,9 +102,7 @@ export class LoginComponent implements AfterViewInit {
       .login({ username: username ?? '', password: password ?? '' })
       .subscribe({
         next: () => {
-          const redirect =
-            this.route.snapshot.queryParamMap.get('redirect') || '/home';
-          this.router.navigateByUrl(redirect);
+          this.router.navigateByUrl('/home');
         },
         error: (err: Error & { retryAfter?: number }) => {
           this.errorMessage.set(err.message);
