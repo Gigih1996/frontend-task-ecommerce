@@ -22,6 +22,7 @@ import { CartStateService } from '../../../core/services/cart-state.service';
 import { APP_ICONS } from '../../icons';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { SearchModalComponent } from '../search-modal/search-modal.component';
 
 @Component({
   selector: 'app-navbar',
@@ -33,6 +34,7 @@ import { AvatarComponent } from '../avatar/avatar.component';
     LucideAngularModule,
     ConfirmDialogComponent,
     AvatarComponent,
+    SearchModalComponent,
   ],
   templateUrl: './navbar.component.html',
 })
@@ -48,14 +50,15 @@ export class NavbarComponent {
 
   links = [
     { path: '/home', label: 'Home' },
-    { path: '/home', label: 'Products' },
-    { path: '/recipes', label: 'Recipes' },
-    { path: '/home', label: 'About Us' },
+    { path: '/products', label: 'Products' },
+    { path: '/categories', label: 'Categories' },
+    { path: '/about', label: 'About Us' },
   ];
 
   menuOpen = signal(false);
   mobileOpen = signal(false);
   logoutOpen = signal(false);
+  searchOpen = signal(false);
 
   constructor() {
     // Close any open dropdown / drawer / dialog on route change so leftover
@@ -108,10 +111,19 @@ export class NavbarComponent {
     if (this.mobileOpen()) this.mobileOpen.set(false);
   }
 
+  openSearch(): void {
+    this.searchOpen.set(true);
+  }
+
+  closeSearch(): void {
+    this.searchOpen.set(false);
+  }
+
   private closeAll(): void {
     this.menuOpen.set(false);
     this.mobileOpen.set(false);
     this.logoutOpen.set(false);
+    this.searchOpen.set(false);
   }
 
   trackByLink = (_: number, item: { path: string; label: string }): string =>

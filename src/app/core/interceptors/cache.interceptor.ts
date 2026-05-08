@@ -54,6 +54,18 @@ const LONG_TTL_PATTERNS = [
   /\/recipes\/tags$/,
 ];
 
+/**
+ * These endpoints are cached in memory only (not localStorage) so that a
+ * page refresh always triggers a real network request. This lets users see
+ * live data in DevTools without manual cache clearing.
+ */
+const MEMORY_ONLY_PATTERNS = [
+  /\/products(\?|$)/,
+  /\/products\/\d+$/,
+  /\/products\/search/,
+  /\/products\/category\//,
+];
+
 const memCache = new Map<string, CacheEntry>();
 
 function ttlFor(url: string): number | null {
@@ -76,8 +88,13 @@ function read(key: string): CacheEntry | null {
   }
 }
 
+function isMemoryOnly(url: string): boolean {
+  return MEMORY_ONLY_PATTERNS.some((re) => re.test(url));
+}
+
 function write(key: string, entry: CacheEntry): void {
   memCache.set(key, entry);
+  if (isMemoryOnly(key)) return; // skip localStorage — refresh clears memory cache
   try {
     localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(entry));
   } catch {

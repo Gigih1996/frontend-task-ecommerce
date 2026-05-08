@@ -20,7 +20,12 @@
     </nav>
 
     <div class="flex items-center gap-1 sm:gap-2">
-      <button type="button" class="hidden rounded-full p-2 text-gray-600 hover:bg-gray-100 sm:block" aria-label="Search">
+      <button
+        type="button"
+        (click)="openSearch()"
+        class="rounded-full p-2 text-gray-600 hover:bg-gray-100"
+        aria-label="Search products"
+      >
         <i-lucide [img]="icons['Search']" class="h-5 w-5"></i-lucide>
       </button>
       <a
@@ -105,10 +110,7 @@
         routerLinkActive="bg-primary-50 text-primary"
         class="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
       >
-        <span class="flex items-center gap-2">
-          <i-lucide [img]="icons['ShoppingCart']" class="h-4 w-4"></i-lucide>
-          Cart
-        </span>
+        <span>Cart</span>
         <span
           *ngIf="cart.count() > 0"
           class="grid min-w-[20px] place-items-center rounded-full bg-red-500 px-1.5 text-[10px] font-bold leading-5 text-white"
@@ -117,6 +119,11 @@
     </nav>
   </div>
 </header>
+
+<app-search-modal
+  *ngIf="searchOpen()"
+  (closed)="closeSearch()"
+></app-search-modal>
 
 <app-confirm-dialog
   [open]="logoutOpen()"

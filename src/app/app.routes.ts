@@ -64,6 +64,27 @@ export const routes: Routes = [
     title: 'Recipe Detail | ShopEase',
   },
   {
+    path: 'products',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/products/products.component').then((m) => m.ProductsComponent),
+    title: 'Products | ShopEase',
+  },
+  {
+    path: 'categories',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/categories/categories.component').then((m) => m.CategoriesComponent),
+    title: 'Categories | ShopEase',
+  },
+  {
+    path: 'about',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/about/about.component').then((m) => m.AboutComponent),
+    title: 'About Us | ShopEase',
+  },
+  {
     path: '**',
     redirectTo: 'home',
   },

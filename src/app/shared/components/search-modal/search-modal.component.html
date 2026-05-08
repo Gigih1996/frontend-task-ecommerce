@@ -1,0 +1,90 @@
+<div
+  class="fixed inset-0 z-50 flex flex-col bg-black/40 animate-fade-in"
+  (click)="onBackdrop($event)"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Search products"
+>
+  <div class="w-full bg-white shadow-lg" (click)="$event.stopPropagation()">
+    <!-- Search input bar -->
+    <div class="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3.5 sm:px-6">
+      <i-lucide [img]="icons['Search']" class="h-5 w-5 flex-shrink-0 text-gray-400"></i-lucide>
+      <input
+        #searchInput
+        type="search"
+        [ngModel]="query()"
+        (ngModelChange)="onQueryChange($event)"
+        placeholder="Search products..."
+        class="flex-1 bg-transparent text-base text-gray-900 placeholder-gray-400 outline-none sm:text-lg"
+        autocomplete="off"
+      />
+      <button
+        type="button"
+        (click)="close()"
+        class="grid h-8 w-8 flex-shrink-0 place-items-center rounded-full text-gray-500 transition hover:bg-gray-100"
+        aria-label="Close search"
+      >
+        <i-lucide [img]="icons['X']" class="h-5 w-5"></i-lucide>
+      </button>
+    </div>
+
+    <!-- Results panel -->
+    <div
+      *ngIf="query().trim()"
+      class="mx-auto max-w-3xl border-t border-gray-100 px-4 pb-4 sm:px-6"
+    >
+      <!-- Loading -->
+      <div *ngIf="loading()" class="flex items-center gap-2 py-4 text-sm text-gray-500">
+        <i-lucide [img]="icons['Loader2']" class="h-4 w-4 animate-spin"></i-lucide>
+        Searching...
+      </div>
+
+      <!-- Results -->
+      <ng-container *ngIf="!loading()">
+        <ul *ngIf="results().length" class="divide-y divide-gray-50">
+          <li *ngFor="let p of results(); trackBy: trackByProduct">
+            <button
+              type="button"
+              (click)="goToProduct(p.id)"
+              class="flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left transition hover:bg-gray-50"
+            >
+              <img
+                [src]="p.thumbnail"
+                [alt]="p.title"
+                [appImgFallback]="p.title"
+                class="h-12 w-12 flex-shrink-0 rounded-lg object-contain bg-gray-50 p-1"
+                loading="lazy"
+              />
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-semibold text-gray-900">{{ p.title }}</p>
+                <p class="text-xs text-gray-500 capitalize">{{ p.category }}</p>
+              </div>
+              <span class="flex-shrink-0 text-sm font-bold text-primary">
+                {{ p.price | currency:'USD':'symbol':'1.2-2' }}
+              </span>
+            </button>
+          </li>
+        </ul>
+
+        <!-- View all results -->
+        <button
+          *ngIf="results().length"
+          type="button"
+          (click)="goToAllResults()"
+          class="mt-2 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 py-2 text-sm font-semibold text-primary transition hover:bg-primary-50"
+        >
+          View all results for "{{ query() }}"
+          <i-lucide [img]="icons['ArrowRight']" class="h-4 w-4"></i-lucide>
+        </button>
+
+        <!-- No results -->
+        <p
+          *ngIf="!results().length && searched()"
+          class="py-4 text-center text-sm text-gray-500"
+        >
+          No products found for "<strong>{{ query() }}</strong>"
+        </p>
+      </ng-container>
+    </div>
+  </div>
+</div>

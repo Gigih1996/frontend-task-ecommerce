@@ -1,0 +1,53 @@
+<div class="min-h-screen bg-gray-50">
+  <app-navbar></app-navbar>
+
+  <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <nav class="flex items-center gap-2 text-xs text-gray-500" aria-label="Breadcrumb">
+      <a routerLink="/home" class="hover:text-primary">Home</a>
+      <i-lucide [img]="icons['ChevronRight']" class="h-3 w-3"></i-lucide>
+      <span class="text-gray-900">Categories</span>
+    </nav>
+
+    <div class="mt-5">
+      <h1 class="text-xl font-extrabold text-gray-900 sm:text-2xl">Browse by Category</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        {{ loading() ? 'Loading...' : (categories().length + ' categories available') }}
+      </p>
+    </div>
+
+    <app-loader *ngIf="loading()" label="Loading categories..."></app-loader>
+
+    <div
+      *ngIf="!loading() && categories().length"
+      class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5"
+    >
+      <button
+        *ngFor="let cat of categories(); let i = index; trackBy: trackByCategory"
+        type="button"
+        (click)="goToProducts(cat.slug)"
+        class="group card flex flex-col items-center justify-center gap-3 p-5 text-center transition hover:border-primary hover:shadow-md sm:p-6"
+      >
+        <span
+          class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br transition group-hover:scale-110"
+          [class]="'bg-gradient-to-br ' + gradientFor(i)"
+        >
+          <i-lucide [img]="icons['ShoppingBag']" class="h-7 w-7 text-gray-600 opacity-70"></i-lucide>
+        </span>
+        <span class="text-xs font-semibold capitalize leading-tight text-gray-800 group-hover:text-primary sm:text-sm">
+          {{ cat.name }}
+        </span>
+        <span class="inline-flex items-center gap-1 text-[10px] font-medium text-primary opacity-0 transition group-hover:opacity-100">
+          View products
+          <i-lucide [img]="icons['ArrowRight']" class="h-3 w-3"></i-lucide>
+        </span>
+      </button>
+    </div>
+
+    <p
+      *ngIf="!loading() && !categories().length"
+      class="mt-10 rounded-xl border border-dashed border-gray-200 py-12 text-center text-sm text-gray-500"
+    >Failed to load categories. Please try again later.</p>
+  </main>
+
+  <app-footer></app-footer>
+</div>

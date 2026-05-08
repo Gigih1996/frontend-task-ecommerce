@@ -163,17 +163,27 @@ export class GoogleAuthService {
   }
 
   /**
-   * Cancel any pending GIS UI (One Tap prompt, credential picker overlay).
-   * Call this after a successful sign-in so the injected #credential_picker_container
-   * is removed from the DOM before routing away from the login page.
+   * Cancel any pending GIS UI and physically remove injected DOM elements.
+   * google.accounts.id.cancel() only hides the One Tap prompt — it does NOT
+   * remove #credential_picker_container from the DOM. That div stays in place
+   * with position:fixed and can silently intercept clicks on the next page.
    */
   cancel(): void {
-    window.google?.accounts.id.cancel();
+    try {
+      window.google?.accounts.id.cancel();
+      window.google?.accounts.id.disableAutoSelect();
+    } catch {
+      // best-effort
+    }
+    // Physically remove every GIS-injected overlay so nothing blocks the navbar.
+    ['credential_picker_container', 'credential_picker_iframe',
+     'googleIdentityService'].forEach((id) => {
+      document.getElementById(id)?.remove();
+    });
   }
 
   signOut(): void {
-    window.google?.accounts.id.disableAutoSelect();
-    window.google?.accounts.id.cancel();
+    this.cancel();
   }
 
   // ─── helpers ──────────────────────────────────────────────────────────────
